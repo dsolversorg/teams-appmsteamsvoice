@@ -57,7 +57,7 @@ jobs:
       run: mkdir temp
 
     - name: Copy files to temporary directory, excluding temp directory
-      run: shopt -s extglob && cp -r !(temp) temp/
+      run: rsync -av --progress --exclude=temp ./ temp/
 
     - name: Archive files before upload
       run: tar -czf node-app.tar.gz -C temp .
