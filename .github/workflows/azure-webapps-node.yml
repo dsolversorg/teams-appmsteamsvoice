@@ -92,6 +92,9 @@ jobs:
     - name: Check disk space
       run: df -h
 
+    - name: Check available memory
+      run: free -m
+
     - name: 'Deploy to Azure WebApp'
       id: deploy-to-webapp
       uses: azure/webapps-deploy@v2
