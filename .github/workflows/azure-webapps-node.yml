@@ -22,7 +22,7 @@ name: Linux_Container_Node_Workflow
 on:
   push:
     branches:
-    - main
+      - main
 
 permissions:
   id-token: write
@@ -32,20 +32,24 @@ jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
     steps:
-    # checkout the repo
+    # Checkout the repo
     - name: 'Checkout GitHub Action'
-      uses: actions/checkout@main
+      uses: actions/checkout@v4
 
+    # Log in to Azure Container Registry
     - uses: azure/docker-login@v1
       with:
         login-server: containermstemasvoice.azurecr.io
         username: ${{ secrets.REGISTRY_USERNAME }}
         password: ${{ secrets.REGISTRY_PASSWORD }}
 
-    - run: |
-        docker build . -t containermstemasvoice.azurecr.io/teams-appmsteamsvoice:${{ github.sha }}
-        docker push containermstemasvoice.azurecr.io/teams-appmsteamsvoice:${{ github.sha }} 
+    # Build and push the Docker image
+    - name: Build and Push Docker image
+      run: |
+        docker build -f path/to/Dockerfile -t containermstemasvoice.azurecr.io/teams-appmsteamsvoice:${{ github.sha }} .
+        docker push containermstemasvoice.azurecr.io/teams-appmsteamsvoice:${{ github.sha }}
 
+    # Deploy to Azure Web App
     - uses: azure/webapps-deploy@v2
       with:
         app-name: 'node-rnc'
