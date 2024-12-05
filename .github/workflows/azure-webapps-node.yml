@@ -86,6 +86,9 @@ jobs:
     - name: Extract files
       run: tar -xzf node-app.tar.gz
 
+    - name: List files for debugging
+      run: ls -la
+
     - name: 'Deploy to Azure WebApp'
       id: deploy-to-webapp
       uses: azure/webapps-deploy@v2
