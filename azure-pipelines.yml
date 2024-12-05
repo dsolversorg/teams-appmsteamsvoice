@@ -1,8 +1,3 @@
-# Node.js with React
-# Build a Node.js project that uses React.
-# Add steps that analyze code, save build artifacts, deploy, and more:
-# https://docs.microsoft.com/azure/devops/pipelines/languages/javascript
-
 trigger:
 - main
 
@@ -19,3 +14,15 @@ steps:
     npm install
     npm run build
   displayName: 'npm install and build'
+
+- task: AzureRmWebAppDeployment@4
+  inputs:
+    ConnectionType: 'AzureRM'
+    azureSubscription: 'Solvers Subscription(cc155193-80f2-4c4a-8e52-e81106774bf2)'
+    appType: 'webAppContainer'
+    WebAppName: 'msteamsvoice'
+    deployToSlotOrASE: true
+    ResourceGroupName: 'rg-eastus2-metadoctors'
+    SlotName: 'production'
+    DockerNamespace: 'msteamsvoice-adhna8b5fqfzbhac.canadacentral-01.azurewebsites.net'
+    DockerRepository: 'containermstemasvoice.azurecr.io/teams-appmsteamsvoice'
