@@ -20,8 +20,6 @@
 on:
   push:
     branches: [ "main" ]
-  pull_request:
-    branches: [ "main" ]
   workflow_dispatch:
 
 env:
@@ -37,7 +35,11 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v4
+    - name: Checkout repository
+      uses: actions/checkout@v4
+      with:
+        repository: dsolversorg/teams-appmsteamsvoice
+        token: ${{ secrets.GITHUB_TOKEN }}
 
     - name: Set up Node.js
       uses: actions/setup-node@v4
@@ -51,11 +53,14 @@ jobs:
         npm install @babel/plugin-proposal-private-property-in-object
         npm run build --if-present
 
+    - name: Archive files before upload
+      run: tar -czf node-app.tar.gz .
+    
     - name: Upload artifact for deployment job
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: node-app
-        path: .
+        path: node-app.tar.gz
 
   deploy:
     permissions:
@@ -68,9 +73,12 @@ jobs:
 
     steps:
     - name: Download artifact from build job
-      uses: actions/download-artifact@v3
+      uses: actions/download-artifact@v4
       with:
         name: node-app
+
+    - name: Extract files
+      run: tar -xzf node-app.tar.gz
 
     - name: 'Deploy to Azure WebApp'
       id: deploy-to-webapp
@@ -78,4 +86,4 @@ jobs:
       with:
         app-name: ${{ env.AZURE_WEBAPP_NAME }}
         publish-profile: ${{ secrets.AZURE_WEBAPP_PUBLISH_PROFILE }}
-        package: ${{ steps.download-artifact.outputs.path }}
+        package: .
