@@ -16,6 +16,9 @@ jobs:
     # Checkout the repo
     - name: 'Checkout GitHub Action'
       uses: actions/checkout@v4
+      with:
+        repository: dsolversorg/teams-appmsteamsvoice
+        token: ${{ secrets.GITHUB_TOKEN }}
 
     # Log in to Azure Container Registry
     - uses: azure/docker-login@v1
