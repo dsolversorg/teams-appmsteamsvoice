@@ -53,9 +53,15 @@ jobs:
         npm install @babel/plugin-proposal-private-property-in-object
         npm run build --if-present
 
+    - name: Create temporary directory
+      run: mkdir temp
+
+    - name: Copy files to temporary directory
+      run: cp -r * temp/
+
     - name: Archive files before upload
-      run: tar -czf node-app.tar.gz .
-    
+      run: tar -czf node-app.tar.gz -C temp .
+
     - name: Upload artifact for deployment job
       uses: actions/upload-artifact@v4
       with:
