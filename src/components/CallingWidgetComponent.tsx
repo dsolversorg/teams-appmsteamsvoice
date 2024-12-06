@@ -279,3 +279,4 @@ export const CallingWidgetComponent = (
     </Stack>
   );
 };
+export default CallingWidgetComponent;

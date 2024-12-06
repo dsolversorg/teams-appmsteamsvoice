@@ -1,6 +1,7 @@
+import React, { Suspense } from "react";
 import "./App.css";
 import {
-  CommunicationIdentifier,
+  CommunicationUserIdentifier,
   MicrosoftTeamsAppIdentifier,
 } from "@azure/communication-common";
 import {
@@ -13,41 +14,48 @@ import {
 import { CallAdd20Regular, Dismiss20Regular } from "@fluentui/react-icons";
 import logo from "./logo.svg";
 
-import { CallingWidgetComponent } from "./components/CallingWidgetComponent";
 import { isValidTeamsAppId, isValidToken, isValidUserId } from "./utils";
+import { CommunicationIdentityClient } from "@azure/communication-identity";
+
+const CallingWidgetComponent = React.lazy(() => import("./components/CallingWidgetComponent"));
 
 registerIcons({
   icons: { dismiss: <Dismiss20Regular />, callAdd: <CallAdd20Regular /> },
 });
 initializeIcons();
-function App() {
-  /**
-   * Token for local user.
-   */
-  const token = "eyJhbGciOiJSUzI1NiIsImtpZCI6IjExRkNCRjhEQzBFRTMzQUY3QkIwQTE3OUUzNjI0RUNBNjk1ODE2NjQiLCJ4NXQiOiJFZnlfamNEdU02OTdzS0Y1NDJKT3ltbFlGbVEiLCJ0eXAiOiJKV1QifQ.eyJza3lwZWlkIjoiYWNzOjhhOTBlNjY4LTc5Y2UtNDBkNi05YjUwLWQ4OWE0Zjc4MzkwYl8wMDAwMDAyNC0yY2RmLTg4NDQtNTcwYy0xMTNhMGQwMDFlNDMiLCJzY3AiOjE3OTIsImNzaSI6IjE3MzMyMzcyNjkiLCJleHAiOjE3MzMzMjM2NjksInJnbiI6ImFtZXIiLCJhY3NTY29wZSI6ImNoYXQsdm9pcCIsInJlc291cmNlSWQiOiI4YTkwZTY2OC03OWNlLTQwZDYtOWI1MC1kODlhNGY3ODM5MGIiLCJyZXNvdXJjZUxvY2F0aW9uIjoidW5pdGVkc3RhdGVzIiwiaWF0IjoxNzMzMjM3MjY5fQ.gSICXr01XqvguLot-zZSrT-agpAEbVXFimdZQlQsN8rYyAb4dlZdjH4ZennOJPJs-7iDU7X-3vW7Uwx96Ggzu0ucy5DNsLJqtArIIZeAfOgV9MYT2ojimcumfreMliH5S6pFe-oRUJ55oSOdv12lRq5hXk0BNvQKm3Mvd5CFub48ce8KYIZl4xVs60NI_daUKT4a6BU9O_SQtbgGRG6OQsLEQ3pQn8KcFsmL3gitBBICkogzVoLlBzFsWjgw2xsfTbLCGWzn18Rtu86DX05cnXQjyw_sIMk9vTwczU493EYUckNphPWM-a_Ng34fVFepFoPSp9jATNfH7OgXFKzH1A";
 
-  /**
-   * User identifier for local user.
-   */
-  const userId: CommunicationIdentifier = {
-    communicationUserId: "8:acs:8a90e668-79ce-40d6-9b50-d89a4f78390b_00000024-2ce5-1f0f-290c-113a0d00e817",
+async function getTokenAndUserId() {
+  const connectionString = "endpoint=https://rs-servcom-msteamsvoice.unitedstates.communication.azure.com/;accesskey=Dn9jJwIqSGfNAz6PZqTtQEUiZWMzfgcDDOAZeVJ9sA2Vt1PY7Q7bJQQJ99ALACULyCp8QgizAAAAAZCSbhVK";
+  const client = new CommunicationIdentityClient(connectionString);
+
+  const user = await client.createUser();
+  const tokenResponse = await client.getToken(user, ["voip"]);
+
+  return {
+    token: tokenResponse.token,
+    userId: user,
   };
+}
 
-  /**
-   * Enter your Teams voice app identifier from the Teams admin center here
-   */
+function App() {
+  const [token, setToken] = React.useState("");
+  const [userId, setUserId] = React.useState<CommunicationUserIdentifier | null>(null);
+
+  React.useEffect(() => {
+    async function fetchTokenAndUserId() {
+      const { token, userId } = await getTokenAndUserId();
+      setToken(token);
+      setUserId(userId);
+    }
+    fetchTokenAndUserId();
+  }, []);
+
   const teamsAppIdentifier: MicrosoftTeamsAppIdentifier = {
     teamsAppId: "005d8e01-bfce-4e6b-a690-dd575984e325",
     cloud: "public",
   };
 
-  const widgetParams = {
-    userId,
-    token,
-    teamsAppIdentifier,
-  };
-
-  if (!isValidToken(token) || !isValidUserId(userId) || !isValidTeamsAppId(teamsAppIdentifier)) {
+  if (!token || !userId || !isValidToken(token) || !isValidUserId(userId) || !isValidTeamsAppId(teamsAppIdentifier)) {
     return (
       <Stack horizontalAlign="center" verticalAlign="center" style={{ height: "40rem", width: "100%" }}>
         <Spinner
@@ -58,6 +66,12 @@ function App() {
       </Stack>
     );
   }
+
+  const widgetParams = {
+    userId,
+    token,
+    teamsAppIdentifier,
+  };
 
   return (
     <Stack
@@ -71,7 +85,7 @@ function App() {
           tokens={{ childrenGap: "2rem" }}
         >
           <Text style={{ marginTop: "auto" }} variant="xLarge">
-            Welcome to a Calling Widget sample
+            Bem-vindo a um exemplo de Calling Widget
           </Text>
           <img
             style={{ width: "7rem", height: "auto" }}
@@ -81,14 +95,13 @@ function App() {
         </Stack>
 
         <Text>
-          Welcome to a Calling Widget sample for the Azure Communication
-          Services UI Library. This sample has the ability to connect you through a
-          Teams voice apps to an agent to help you.
+          Bem-vindo a um exemplo de widget de chamada para o Azure Communication
+          Biblioteca de UI de serviços. Este exemplo tem a capacidade de conectar você através de um aplicativos de voz do Teams para ajudá-lo.
         </Text>
         <Text>
-          As a user all you need to do is click the widget below, enter your
-          display name for the call - this will act as your caller id, and
-          action the <b>start call</b> button.
+          Como usuário, tudo que você precisa fazer é clicar no widget abaixo, inserir seu
+          nome de exibição da chamada - funcionará como seu identificador de chamada e
+          acione o botão <b>iniciar chamada</b>.
         </Text>
       </Stack>
       <Stack
@@ -96,18 +109,20 @@ function App() {
         tokens={{ childrenGap: "1.5rem" }}
         style={{ overflow: "hidden", margin: "auto" }}
       >
-        <CallingWidgetComponent
-          widgetAdapterArgs={widgetParams}
-          onRenderLogo={() => {
-            return (
-              <img
-                style={{ height: "4rem", width: "4rem", margin: "auto" }}
-                src={logo}
-                alt="logo"
-              />
-            );
-          }}
-        />
+        <Suspense fallback={<Spinner label="Carregando widget..." />}>
+          <CallingWidgetComponent
+            widgetAdapterArgs={widgetParams}
+            onRenderLogo={() => {
+              return (
+                <img
+                  style={{ height: "4rem", width: "4rem", margin: "auto" }}
+                  src={logo}
+                  alt="logo"
+                />
+              );
+            }}
+          />
+        </Suspense>
       </Stack>
     </Stack>
   );

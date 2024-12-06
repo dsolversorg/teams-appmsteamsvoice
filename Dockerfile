@@ -1,20 +1,23 @@
-# Use uma imagem base oficial do Node.js
-FROM node:16
+# Use uma imagem base do Ubuntu
+FROM ubuntu:latest
 
-# Defina o diretório de trabalho no contêiner
+# Defina o diretório de trabalho
 WORKDIR /app
 
-# Copie o package.json e o package-lock.json para o diretório de trabalho
-COPY package*.json ./
+# Copie todos os arquivos locais para o diretório de trabalho no contêiner
+COPY . /app
 
-# Instale as dependências do projeto
-RUN npm install
-
-# Copie o restante dos arquivos do projeto para o diretório de trabalho
-COPY . .
+# Instale o Azure CLI
+RUN apt-get update && \
+    apt-get install -y curl apt-transport-https lsb-release gnupg && \
+    curl -sL https://packages.microsoft.com/keys/microsoft.asc | apt-key add - && \
+    AZ_REPO=$(lsb_release -cs) && \
+    echo "deb [arch=amd64] https://packages.microsoft.com/repos/azure-cli/ $AZ_REPO main" | tee /etc/apt/sources.list.d/azure-cli.list && \
+    apt-get update && \
+    apt-get install -y azure-cli
 
 # Exponha a porta em que a aplicação será executada
 EXPOSE 3000
 
-# Comando para iniciar a aplicação
-CMD ["npm", "start"]
+# Comando para manter o contêiner em execução
+CMD ["npm", "start", "tail", "-f", "/dev/null"]
