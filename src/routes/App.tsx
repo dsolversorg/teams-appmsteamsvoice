@@ -14,10 +14,10 @@ import {
 import { CallAdd20Regular, Dismiss20Regular } from "@fluentui/react-icons";
 import logo from "./logo.svg";
 
-import { isValidTeamsAppId, isValidToken, isValidUserId } from "./utils";
+import { isValidTeamsAppId, isValidToken, isValidUserId } from "../utils";
 import { CommunicationIdentityClient } from "@azure/communication-identity";
 
-const CallingWidgetComponent = React.lazy(() => import("./components/CallingWidgetComponent"));
+const CallingWidgetComponent = React.lazy(() => import("../components/CallingWidgetComponent"));
 
 registerIcons({
   icons: { dismiss: <Dismiss20Regular />, callAdd: <CallAdd20Regular /> },
