@@ -1,19 +1,12 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import { Provider } from 'react-redux';
-import ReactTooltip from 'react-tooltip';
 import Router from './Router';
 import reportWebVitals from './reportWebVitals';
 
 ReactDOM.render(
   <React.StrictMode>
-    <Provider store={store}>
-      <Router />
-    </Provider>
-    <GlobalStyle />
-    {/* globally enable react tooltips */}
-    <ReactTooltip />
-    {/* will be null if GA tracking is not enabled */}
+    <Router />
   </React.StrictMode>,
   document.getElementById('root'),
 );
