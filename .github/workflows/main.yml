@@ -36,5 +36,5 @@ jobs:
           AWS_S3_BUCKET: sites.pessoadigital.digitalsolvers.com
           CUSTOMER: teams-appmsteamsvoice
         run: |
-          cp build/App.tsx build/$CUSTOMER
+          cp build/index.html build/$CUSTOMER
           aws s3 sync build/ s3://$AWS_S3_BUCKET/teams-appmsteamsvoice
