@@ -37,7 +37,7 @@ async function getTokenAndUserId() {
   };
 }
 
-function App() {
+function Landing() {
   const [token, setToken] = React.useState("");
   const [userId, setUserId] = React.useState<CommunicationUserIdentifier | null>(null);
 
@@ -128,4 +128,4 @@ function App() {
   );
 }
 
-export default App;
+export default Landing;

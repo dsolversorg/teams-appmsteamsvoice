@@ -10,7 +10,7 @@ import {
 } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 import { XCircle } from 'react-bootstrap-icons';
-import App from './routes/App';
+import Landing from './routes/Landing';
 
 // only init google analytics if a tracking ID is defined in env
 const { REACT_APP_GA_TRACKING_ID } = process.env;
@@ -84,7 +84,7 @@ function App() {
         ) : null}
       <Switch>
         <Route path="/teams-appmsteamsvoice">
-          <App />
+          <Landing />
         </Route>
       </Switch>
       <LinkGAtoRouter />
