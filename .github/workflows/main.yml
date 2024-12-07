@@ -23,6 +23,9 @@ jobs:
       with:
         node-version: '14'
 
+    - name: Clean npm cache
+      run: npm cache clean --force
+
     - name: Install CI
       run: npm ci
 
@@ -49,3 +52,6 @@ jobs:
         publish-profile: ${{ secrets.AZURE_WEBAPP_PUBLISH_PROFILE }}
         package: myapp.zip
         runtime-stack: 'NODE|14-lts'
+
+    - name: Display npm log
+      run: cat /home/runner/.npm/_logs/$(date +%Y-%m-%dT%H_%M_%S_%3N)Z-debug.log
