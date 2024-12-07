@@ -1,45 +1,32 @@
-name: Build & Sync S3
+name: Deploy to Azure Web App
 
 on:
   push:
-    branches: ["main"]
-  workflow_dispatch:
+    branches:
+      - main
 
 jobs:
-  build:
-    permissions:
-      id-token: write
-      contents: read
-
-    name: Deploy Front
+  build-and-deploy:
     runs-on: ubuntu-latest
+
     steps:
-      - name: Check out code
-        uses: actions/checkout@v3
+    - name: Checkout code
+      uses: actions/checkout@v2
 
-      - name: Setup Node 16
-        uses: actions/setup-node@v3
-        with:
-          node-version: 16
+    - name: Set up Node.js
+      uses: actions/setup-node@v2
+      with:
+        node-version: '14'
 
-      - run: npm install
-      - run: npm run build
+    - name: Install dependencies
+      run: npm install
 
-      - name: Configure AWS credentials
-        uses: aws-actions/configure-aws-credentials@v1
-        with:
-          role-to-assume: ${{ secrets.PRD_AWS_ROLE_TO_ASSUME }}
-          role-session-name: githubaction
-          aws-region: ${{ secrets.PRD_AWS_DEFAULT_REGION }}
+    - name: Build the app
+      run: npm run build
 
-      - name: Sync to s3 bucket
-        env:
-          AWS_S3_BUCKET: sites.pessoadigital.digitalsolvers.com
-          CUSTOMER: teams-appmsteamsvoice
-        run: |
-          mkdir -p build/$CUSTOMER
-          cp build/index.html build/$CUSTOMER/index.html
-          aws s3 sync build/ s3://$AWS_S3_BUCKET/$CUSTOMER
-
-      - name: Start Development Server
-        run: npm start
+    - name: Deploy to Azure Web App
+      uses: azure/webapps-deploy@v2
+      with:
+        app-name: 'YOUR_APP_NAME'
+        slot-name: 'production'
+        publish-profile: ${{ secrets.AZURE_WEBAPP_PUBLISH_PROFILE }}
