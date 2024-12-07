@@ -3,7 +3,7 @@ name: Build & Sync S3
 on:
   push:
     branches: ["main"]
-  #workflow_dispatch:
+  workflow_dispatch:
 
 jobs:
   build:
@@ -21,6 +21,7 @@ jobs:
         uses: actions/setup-node@v3
         with:
           node-version: 16
+
       - run: npm install
       - run: npm run build
 
@@ -39,3 +40,6 @@ jobs:
           mkdir -p build/$CUSTOMER
           cp build/index.html build/$CUSTOMER/index.html
           aws s3 sync build/ s3://$AWS_S3_BUCKET/$CUSTOMER
+
+      - name: Start Development Server
+        run: npm start
