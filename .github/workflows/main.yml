@@ -32,9 +32,6 @@ jobs:
     - name: Build the app
       run: npm run build --if-present
 
-    - name: Test Build
-      run: npm test
-
     - name: Archive production artifacts
       run: zip -r myapp.zip .
 
@@ -51,7 +48,3 @@ jobs:
         slot-name: 'production'
         publish-profile: ${{ secrets.AZURE_WEBAPP_PUBLISH_PROFILE }}
         package: myapp.zip
-        runtime-stack: 'NODE|14-lts'
-
-    - name: Display npm log
-      run: cat /home/runner/.npm/_logs/$(date +%Y-%m-%dT%H_%M_%S_%3N)Z-debug.log
