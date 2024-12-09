@@ -41,6 +41,9 @@ jobs:
         name: msteamsvoiceapp - Zip Deploy
         path: myapp.zip
 
+    - name: Set WEBSITE_RUN_FROM_PACKAGE
+      run: az webapp config appsettings set --name msteamsvoiceapp --resource-group <your-resource-group> --settings WEBSITE_RUN_FROM_PACKAGE=1
+
     - name: Deploy to Azure Web App using Run From Package
       uses: azure/webapps-deploy@v2
       with:
