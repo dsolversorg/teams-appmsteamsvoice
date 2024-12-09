@@ -27,14 +27,11 @@ jobs:
       - name: Build the app
         run: npm run build --if-present
 
-      - name: Archive production artifacts
-        run: zip -r myapp.zip .
-
       - name: Upload artifact for deployment job
         uses: actions/upload-artifact@v4
         with:
           name: node-app
-          path: myapp.zip
+          path: .
 
   deploy:
     runs-on: ubuntu-latest
@@ -64,4 +61,4 @@ jobs:
         with:
           app-name: 'VoiceSkill'
           slot-name: 'Production'
-          package: myapp.zip
+          package: .
