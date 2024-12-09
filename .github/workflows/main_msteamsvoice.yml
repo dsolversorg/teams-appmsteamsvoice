@@ -33,13 +33,13 @@ jobs:
       run: npm run build --if-present
 
     - name: Archive production artifacts
-      run: zip -r msteamsvoiceapp - Zip Deploy.zip .
+      run: zip -r myapp.zip .
 
     - name: Upload artifact
       uses: actions/upload-artifact@v4
       with:
         name: msteamsvoiceapp - Zip Deploy
-        path: msteamsvoiceapp - Zip Deploy.zip
+        path: myapp.zip
 
     - name: Deploy to Azure Web App using Run From Package
       uses: azure/webapps-deploy@v2
@@ -47,4 +47,4 @@ jobs:
         app-name: 'msteamsvoiceapp'
         slot-name: 'production'
         publish-profile: ${{ secrets.AZURE_WEBAPP_PUBLISH_PROFILE }}
-        package: msteamsvoiceapp - Zip Deploy.zip
+        package: myapp.zip
